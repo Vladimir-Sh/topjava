@@ -20,7 +20,10 @@ public class UserMealsUtil {
                 new UserMeal(LocalDateTime.of(2015, Month.MAY, 31,13,0), "Обед", 500),
                 new UserMeal(LocalDateTime.of(2015, Month.MAY, 31,20,0), "Ужин", 510)
         );
-        getFilteredWithExceeded(mealList, LocalTime.of(7, 0), LocalTime.of(12,0), 2000);
+        List<UserMealWithExceed>  filteredMeal = getFilteredWithExceeded2(mealList, LocalTime.of(7, 0), LocalTime.of(12,0), 2000);
+        filteredMeal.stream()
+                .forEach(meal -> System.out.println(meal.getDateTime() + " " + meal.getDescription() + " " + meal.getCalories() + " " + meal.isExceed()));
+
     }
 
     public static List<UserMealWithExceed>  getFilteredWithExceeded2(List<UserMeal> mealList, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
@@ -31,8 +34,9 @@ public class UserMealsUtil {
 
         return
                 mealList.stream()
-                .filter(meal -> meal.getDateTime().toLocalTime().isAfter(startTime))
-                .filter(meal -> meal.getDateTime().toLocalTime().isBefore(endTime))
+                //.filter(meal -> meal.getTime().isBefore(endTime))
+                //.filter(meal -> meal.getTime().isAfter(startTime)
+                .filter(meal -> TimeUtil.isBetween(meal.getTime(), startTime, endTime))
                 .map(meal -> new UserMealWithExceed(meal, (dateMap.get(meal.getDate()) > caloriesPerDay)))
                 .collect(Collectors.toList());
     }
@@ -48,9 +52,7 @@ public class UserMealsUtil {
 
         List<UserMealWithExceed> mealListWithExceed = new ArrayList<>(); //список всей еды с полем превышения дневной нормы калорий
         for (UserMeal userMealElement : mealList) {
-            boolean isExceed = false;
-            if (caloriesDateMap.get(userMealElement.getDateTime().toLocalDate()) > caloriesPerDay)
-                isExceed = true;
+            boolean isExceed = false; if (caloriesDateMap.get(userMealElement.getDateTime().toLocalDate()) > caloriesPerDay) isExceed = true;
             UserMealWithExceed userMealWithExceedElement = new UserMealWithExceed(userMealElement.getDateTime(), userMealElement.getDescription(), userMealElement.getCalories(), isExceed);
             mealListWithExceed.add(userMealWithExceedElement);
         }
