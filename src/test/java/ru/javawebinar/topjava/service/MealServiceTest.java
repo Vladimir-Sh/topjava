@@ -56,7 +56,7 @@ public class MealServiceTest {
     @Test
     public void get() throws Exception {
         Meal actual = service.get(ADMIN_MEAL_ID, ADMIN_ID);
-        assertMatch(actual, ADMIN_MEAL1);
+        assertMatch(ADMIN_MEAL1, actual);
     }
 
     @Test(expected = NotFoundException.class)
